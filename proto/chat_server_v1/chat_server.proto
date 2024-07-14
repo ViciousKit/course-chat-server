@@ -7,14 +7,14 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/ViciousKit/course-chat-server/generated/chat_server_v1;chat_server_v1";
 
-service chatServerV1 {
+service ChatServerV1 {
     rpc Create(CreateRequest) returns (CreateResponse);
     rpc Delete(DeleteRequest) returns (google.protobuf.Empty);
     rpc SendMessage(SendMessageRequest) returns (google.protobuf.Empty);
 }
 
 message CreateRequest {
-    repeated string userNames = 1;
+    repeated string user_names = 1;
 }
 
 message CreateResponse {
@@ -24,7 +24,6 @@ message CreateResponse {
 message DeleteRequest {
     int64 id = 1;
 }
-
 
 message SendMessageRequest {
     string from = 1;

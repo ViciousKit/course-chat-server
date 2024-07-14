@@ -16,7 +16,7 @@ type srv struct {
 	generated.UnimplementedChatServerV1Server
 }
 
-var port = 8082
+const port = 8085
 
 func main() {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
