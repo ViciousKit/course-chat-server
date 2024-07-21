@@ -1,0 +1,25 @@
+volumes:
+  pg_chat_dev_volume:
+
+services:
+  chat_app_dev:
+    profiles:
+      - dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8082:${GRPC_PORT}"
+  pg_chat_dev:
+    image: postgres:14-alpine3.17
+    profiles:
+      - dev
+    environment:
+      - "POSTGRES_DB=${PG_DATABASE_NAME}"
+      - "POSTGRES_USER=${PG_USER}"
+      - "POSTGRES_PASSWORD=${PG_PASSWORD}"
+    ports:
+      - "${PG_PORT}:5436"
+    volumes:
+      - pg_volume:/var/lib/postgresql/data
+
