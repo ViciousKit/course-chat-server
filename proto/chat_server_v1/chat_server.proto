@@ -17,7 +17,7 @@ service ChatServerV1 {
 }
 
 message CreateChatRequest {
-    repeated string user_names = 1;
+    repeated int64 user_ids = 1;
 }
 
 message CreateChatResponse {
@@ -26,7 +26,7 @@ message CreateChatResponse {
 
 message AddUsersRequest {
     int64 id = 1;
-    repeated string user_names = 2;
+    repeated int64 user_ids = 2;
 }
 
 message DeleteChatRequest {
@@ -35,12 +35,12 @@ message DeleteChatRequest {
 
 message RemoveUsersRequest {
     int64 id = 1;
-    repeated string user_names = 2;
+    repeated int64 user_ids = 2;
 }
 
 message SendMessageRequest {
-    string from = 1;
-    int64 id = 2;
+    int64 from = 1;
+    int64 chat_id = 2;
     string text = 3;
     google.protobuf.Timestamp timestamp = 4;
 }
@@ -53,7 +53,7 @@ message GetMessagesRequest {
 }
 
 message Message {
-    string from = 1;
+    int64 from = 1;
     string text = 2;
     google.protobuf.Timestamp created_at = 3;
     int64 id = 4;

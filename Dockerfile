@@ -11,7 +11,7 @@ FROM alpine:latest
 WORKDIR /root
 
 COPY --from=builder /app/bin/chat_service .
-COPY --from=builder /app/${ENV_FILE} .
+COPY --from=builder /app/${ENV_FILE} .local.env
 RUN apk add curl
 
 CMD [ "./chat_service" ]
