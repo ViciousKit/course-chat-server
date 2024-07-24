@@ -63,7 +63,6 @@ func (s *Storage) DeleteChat(ctx context.Context, chatId int64) error {
 	}
 
 	return nil
-
 }
 
 func (s *Storage) SendMessage(ctx context.Context, from int64, text string, chatId int64, timestamp *timestamp.Timestamp) error {

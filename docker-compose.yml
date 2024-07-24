@@ -10,7 +10,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8082:${GRPC_PORT}"
-  pg_chat_dev:
+  pg_dev:
     image: postgres:14-alpine3.17
     profiles:
       - dev

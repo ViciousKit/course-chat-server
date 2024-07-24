@@ -9,7 +9,6 @@ import (
 	generated "github.com/ViciousKit/course-chat-server/generated/chat_server_v1"
 	"github.com/ViciousKit/course-chat-server/internal/config"
 	"github.com/ViciousKit/course-chat-server/storage"
-	"google.golang.org/genproto/googleapis/rpc/code"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -19,6 +18,13 @@ type srv struct {
 	generated.UnimplementedChatServerV1Server
 	Storage *storage.Storage
 }
+
+const (
+	errorMissingArguments    = "missing arguments"
+	errorInternal            = "internal error"
+	errorPasswordDoesntMatch = "password doesn't match"
+	errorMissingEntity       = "missing requested entity"
+)
 
 func main() {
 	cfg := config.LoadConfig()
@@ -46,14 +52,14 @@ func (s *srv) SendMessage(ctx context.Context, req *generated.SendMessageRequest
 	method := "SendMessage"
 
 	if req.GetChatId() == 0 || req.GetFrom() == 0 || req.GetText() == "" || req.GetTimestamp() == nil {
-		return &emptypb.Empty{}, fmt.Errorf("%s: empty fields", method)
+		return &emptypb.Empty{}, fmt.Errorf("%s: %s", method, errorMissingArguments)
 	}
 
 	err := s.Storage.SendMessage(ctx, req.GetFrom(), req.GetText(), req.GetChatId(), req.GetTimestamp())
 	if err != nil {
 		fmt.Println(err)
 
-		return &emptypb.Empty{}, fmt.Errorf("method %s: %d", method, code.Code_INTERNAL)
+		return &emptypb.Empty{}, fmt.Errorf("%s: %s", method, errorInternal)
 	}
 
 	return &emptypb.Empty{}, nil
@@ -62,13 +68,13 @@ func (s *srv) SendMessage(ctx context.Context, req *generated.SendMessageRequest
 func (s *srv) CreateChat(ctx context.Context, req *generated.CreateChatRequest) (*generated.CreateChatResponse, error) {
 	method := "CreateChat"
 	if len(req.UserIds) == 0 {
-		return &generated.CreateChatResponse{}, fmt.Errorf("%s: empty user ids", method)
+		return &generated.CreateChatResponse{}, fmt.Errorf("%s: %s", method, errorMissingArguments)
 	}
 	chatId, err := s.Storage.CreateChat(ctx, req.GetUserIds())
 	if err != nil {
 		fmt.Println(err)
 
-		return &generated.CreateChatResponse{}, fmt.Errorf("method %s: %d", method, code.Code_INTERNAL)
+		return &generated.CreateChatResponse{}, fmt.Errorf("%s: %s", method, errorInternal)
 	}
 
 	return &generated.CreateChatResponse{
@@ -80,14 +86,14 @@ func (s *srv) DeleteChat(ctx context.Context, req *generated.DeleteChatRequest) 
 	method := "DeleteChat"
 
 	if req.GetId() == 0 {
-		return &emptypb.Empty{}, fmt.Errorf("%s: empty chat id", method)
+		return &emptypb.Empty{}, fmt.Errorf("%s: %s", method, errorMissingArguments)
 	}
 
 	err := s.Storage.DeleteChat(ctx, req.GetId())
 	if err != nil {
 		fmt.Println(err)
 
-		return &emptypb.Empty{}, fmt.Errorf("method %s: %d", method, code.Code_INTERNAL)
+		return &emptypb.Empty{}, fmt.Errorf("%s: %s", method, errorInternal)
 	}
 
 	return &emptypb.Empty{}, nil
