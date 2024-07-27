@@ -3,7 +3,7 @@
 CREATE TABLE IF NOT EXISTS messages (
     id SERIAL PRIMARY KEY,
     from BIGINT NOT NULL,
-    text VARCHAR(255) NOT NULL,
+    text TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL,
     chat_id BIGINT NOT NULL REFERENCES chats(id) ON DELETE CASCADE
 )
