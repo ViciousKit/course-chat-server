@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/jackc/pgx/v5"
 	"log"
 	"net"
 
@@ -16,19 +17,17 @@ import (
 
 type srv struct {
 	generated.UnimplementedChatServerV1Server
-	Storage *storage.Storage
+	storage *storage.Storage
 }
 
 const (
-	errorMissingArguments    = "missing arguments"
-	errorInternal            = "internal error"
-	errorPasswordDoesntMatch = "password doesn't match"
-	errorMissingEntity       = "missing requested entity"
+	errorMissingArguments = "missing arguments"
+	errorInternal         = "internal error"
+	errorMissingEntity    = "missing requested entity"
 )
 
 func main() {
 	cfg := config.LoadConfig()
-	fmt.Printf("%+v\n", cfg)
 
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.GRPC.Port))
 	if err != nil {
@@ -37,7 +36,8 @@ func main() {
 	fmt.Printf("Started app at port :%d", cfg.GRPC.Port)
 
 	api := &srv{}
-	api.Storage = storage.New(cfg.PGUsername, cfg.PGPassword, cfg.PGDatabase, cfg.PGHost, cfg.PGPort)
+	connection := initStorage(cfg.PGUsername, cfg.PGPassword, cfg.PGDatabase, cfg.PGHost, cfg.PGPort)
+	api.storage = storage.New(connection)
 
 	grpcServer := grpc.NewServer()
 	reflection.Register(grpcServer)
@@ -48,33 +48,49 @@ func main() {
 	}
 }
 
-func (s *srv) SendMessage(ctx context.Context, req *generated.SendMessageRequest) (*emptypb.Empty, error) {
-	method := "SendMessage"
+func initStorage(user string, password string, dbname string, host string, port int) *pgx.Conn {
+	dsn := fmt.Sprintf("host=%s port=%d user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		host, port, user, password, dbname)
 
+	conn, err := pgx.Connect(context.Background(), dsn)
+	if err != nil {
+		fmt.Println("Cant connect pg" + err.Error())
+		panic(err)
+	}
+	if err := conn.Ping(context.Background()); err != nil {
+		fmt.Println("Cant ping pg" + err.Error())
+		panic(err)
+	}
+	fmt.Println("Connected!")
+
+	return conn
+}
+
+func (s *srv) SendMessage(ctx context.Context, req *generated.SendMessageRequest) (*emptypb.Empty, error) {
 	if req.GetChatId() == 0 || req.GetFrom() == 0 || req.GetText() == "" || req.GetTimestamp() == nil {
-		return &emptypb.Empty{}, fmt.Errorf("%s: %s", method, errorMissingArguments)
+		return &emptypb.Empty{}, fmt.Errorf(errorMissingArguments)
 	}
 
-	err := s.Storage.SendMessage(ctx, req.GetFrom(), req.GetText(), req.GetChatId(), req.GetTimestamp())
+	err := s.storage.SendMessage(ctx, req.GetFrom(), req.GetText(), req.GetChatId(), req.GetTimestamp())
 	if err != nil {
 		fmt.Println(err)
 
-		return &emptypb.Empty{}, fmt.Errorf("%s: %s", method, errorInternal)
+		return &emptypb.Empty{}, fmt.Errorf(errorInternal)
 	}
 
 	return &emptypb.Empty{}, nil
 }
 
 func (s *srv) CreateChat(ctx context.Context, req *generated.CreateChatRequest) (*generated.CreateChatResponse, error) {
-	method := "CreateChat"
 	if len(req.UserIds) == 0 {
-		return &generated.CreateChatResponse{}, fmt.Errorf("%s: %s", method, errorMissingArguments)
+		return &generated.CreateChatResponse{}, fmt.Errorf(errorMissingArguments)
 	}
-	chatId, err := s.Storage.CreateChat(ctx, req.GetUserIds())
+	chatId, err := s.storage.CreateChat(ctx, req.GetUserIds())
 	if err != nil {
 		fmt.Println(err)
 
-		return &generated.CreateChatResponse{}, fmt.Errorf("%s: %s", method, errorInternal)
+		return &generated.CreateChatResponse{}, fmt.Errorf(errorInternal)
 	}
 
 	return &generated.CreateChatResponse{
@@ -83,33 +99,28 @@ func (s *srv) CreateChat(ctx context.Context, req *generated.CreateChatRequest) 
 }
 
 func (s *srv) DeleteChat(ctx context.Context, req *generated.DeleteChatRequest) (*emptypb.Empty, error) {
-	method := "DeleteChat"
-
 	if req.GetId() == 0 {
-		return &emptypb.Empty{}, fmt.Errorf("%s: %s", method, errorMissingArguments)
+		return &emptypb.Empty{}, fmt.Errorf(errorMissingArguments)
 	}
 
-	err := s.Storage.DeleteChat(ctx, req.GetId())
+	err := s.storage.DeleteChat(ctx, req.GetId())
 	if err != nil {
 		fmt.Println(err)
 
-		return &emptypb.Empty{}, fmt.Errorf("%s: %s", method, errorInternal)
+		return &emptypb.Empty{}, fmt.Errorf(errorInternal)
 	}
 
 	return &emptypb.Empty{}, nil
 }
 
 func (s *srv) AddUsers(ctx context.Context, req *generated.AddUsersRequest) (*emptypb.Empty, error) {
-	// method := "AddUsers"
 	return &emptypb.Empty{}, nil
 }
 
 func (s *srv) RemoveUsers(ctx context.Context, req *generated.RemoveUsersRequest) (*emptypb.Empty, error) {
-	// method := "RemoveUsers"
 	return &emptypb.Empty{}, nil
 }
 
 func (s *srv) GetMessages(ctx context.Context, req *generated.GetMessagesRequest) (*generated.GetMessagesResponse, error) {
-	// method := "GetMessages"
 	return &generated.GetMessagesResponse{}, nil
 }

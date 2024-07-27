@@ -1,11 +1,13 @@
 package models
 
-import "github.com/golang/protobuf/ptypes/timestamp"
+import (
+	"time"
+)
 
 type Message struct {
-	From      int64                `json:"from"`
-	Text      string               `json:"text"`
-	Timestamp *timestamp.Timestamp `json:"timestamp"`
-	Id        int64                `json:"id"`
-	ChatId    int64                `json:"chat_id"`
+	From      int64      `json:"from"`
+	Text      string     `json:"text"`
+	Timestamp *time.Time `json:"timestamp"`
+	Id        int64      `json:"id"`
+	ChatId    int64      `json:"chat_id"`
 }
