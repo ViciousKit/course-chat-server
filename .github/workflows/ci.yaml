@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout master
         uses: actions/checkout@v3
+        with:
+          path: main
 
       - name: Setup docker buildx
         uses: docker/setup-buildx-action@v2
@@ -29,4 +31,4 @@ jobs:
         run: |
           TAG_NAME=${echo $GITHUB_SHA | head -c7}
           docker buildx create --use 
-          docker buildx build --no-cache --push --tah $REGISTRY/$IMAGE_NAME:$TAG_NAME -f .Dockerfile .
+          docker buildx build --no-cache --push --tag $REGISTRY/$IMAGE_NAME:$TAG_NAME -f .Dockerfile .
