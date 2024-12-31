@@ -2,7 +2,7 @@ include local.env
 
 LOCAL_BIN:=$(CURDIR)/bin
 
-LOCAL_MIGRATAION_DIR:=$(MIGRATION_DIR)
+LOCAL_MIGRATION_DIR:=$(MIGRATION_DIR)
 LOCAL_MIGRATION_DSN:="host=localhost user=$(PG_USER) password=$(PG_PASSWORD) dbname=$(PG_DATABASE_NAME) port=$(PG_PORT)"
 
 install-deps:
@@ -33,13 +33,13 @@ bin-build:
 docker-build:
 	docker buildx build --no-cache --platform linux/amd64 -t chat_service:v0.0.1
 
-local-migration-status:
-	bin/goose -dir $(LOCAL_MIGRATAION_DIR) postgres $(LOCAL_MIGRATION_DSN) status -v
+local-MIGRATION-status:
+	bin/goose -dir $(LOCAL_MIGRATION_DIR) postgres $(LOCAL_MIGRATION_DSN) status -v
 
-local-migration-up:
+local-MIGRATION-up:
 	bin/goose -dir $(LOCAL_MIGRATAION_DIR) postgres $(LOCAL_MIGRATION_DSN) up -v
 
-local-migration-down:
+local-MIGRATION-down:
 	bin/goose -dir $(LOCAL_MIGRATAION_DIR) postgres $(LOCAL_MIGRATION_DSN) down -v
 
 compose-up-dev:
