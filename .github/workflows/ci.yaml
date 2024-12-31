@@ -1,4 +1,4 @@
-name: ci
+name: ci-dev
 
 on:
   push:
@@ -31,5 +31,6 @@ jobs:
       - name: Build and push docker image
         run: |
           TAG_NAME=$(echo $GITHUB_SHA | cut -c1-7)
+          LOCAL_ENV="local.env"
           docker buildx create --use 
           docker buildx build --no-cache --push --tag $REGISTRY/$IMAGE_NAME:$TAG_NAME -f Dockerfile .
