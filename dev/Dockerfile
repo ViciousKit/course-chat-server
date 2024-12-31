@@ -1,6 +1,6 @@
 FROM golang:1.22-alpine AS builder
 
-COPY . /app
+COPY .. /app
 WORKDIR /app
 
 RUN go mod download
@@ -11,7 +11,7 @@ FROM alpine:3.20
 WORKDIR /root
 
 COPY --from=builder /app/bin/chat_service .
-COPY --from=builder /app/${ENV_FILE} .local.env
+COPY --from=builder /app/local.env .local.env
 RUN apk add curl
 
 CMD [ "./chat_service" ]
