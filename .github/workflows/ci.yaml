@@ -7,10 +7,9 @@ on:
     branches: [ main ]
 
 env:
-  REGISTRY: cr.selcloud.ru
+  REGISTRY: cr.selcloud.ru/chat-service
   IMAGE_NAME: chat-server
   CONTAINER_NAME: chat-chat-server
-  ENV_FILE: local.env
 
 jobs:
   image-build-and-push:
@@ -28,8 +27,6 @@ jobs:
 
       - name: Build and push docker image
         run: |
-          export ENV_FILE=$ENV_FILE
           TAG_NAME=$(echo $GITHUB_SHA | cut -c1-7)
-          ENV_FILE="local.env"
           docker buildx create --use 
-          docker buildx build --no-cache --push --tag $REGISTRY/$IMAGE_NAME:$TAG_NAME -f Dockerfile .
+          docker buildx build --no-cache --push --tag $REGISTRY/$IMAGE_NAME:$TAG_NAME -f dev/Dockerfile .
