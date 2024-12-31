@@ -28,9 +28,7 @@ jobs:
         run: docker login -u ${{secrets.REGISTRY_USERNAME}} -p ${{secrets.REGISTRY_PASSWORD}} $REGISTRY
 
       - name: Build and push docker image
-        with:
-          context: .
         run: |
           TAG_NAME=$(echo $GITHUB_SHA | cut -c1-7)
           docker buildx create --use 
-          docker buildx build --no-cache --push --tag $REGISTRY/$IMAGE_NAME:$TAG_NAME -f .Dockerfile .
+          docker buildx build --no-cache --push --tag $REGISTRY/$IMAGE_NAME:$TAG_NAME -f ./Dockerfile .
