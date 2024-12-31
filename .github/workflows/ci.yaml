@@ -10,6 +10,7 @@ env:
   REGISTRY: cr.selcloud.ru
   IMAGE_NAME: chat-server
   CONTAINER_NAME: chat-chat-server
+  ENV_FILE: local.env
 
 jobs:
   image-build-and-push:
@@ -26,8 +27,6 @@ jobs:
         run: docker login -u ${{secrets.REGISTRY_USERNAME}} -p ${{secrets.REGISTRY_PASSWORD}} $REGISTRY
 
       - name: Build and push docker image
-        with:
-          build-arg: "ENV_FILE=local.env"
         run: |
           TAG_NAME=$(echo $GITHUB_SHA | cut -c1-7)
           ENV_FILE="local.env"
