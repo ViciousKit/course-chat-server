@@ -25,8 +25,8 @@ jobs:
       - name: Login to Docker Registry
         run: docker login -u ${{secrets.REGISTRY_USERNAME}} -p ${{secrets.REGISTRY_PASSWORD}} $REGISTRY
 
-      - name: list files
-        run: ls -R
+      - name: set env variable
+        run: echo "ENV_FILE=local.env" >> $ENV_FILE
 
       - name: Build and push docker image
         run: |
