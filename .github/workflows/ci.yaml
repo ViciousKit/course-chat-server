@@ -8,8 +8,8 @@ on:
 
 env:
   REGISTRY: cr.selcloud.ru
-  IMAGE_NAME: chat_service
-  CONTAINER_NAME: chat_service_container
+  IMAGE_NAME: chat-server
+  CONTAINER_NAME: chat-chat-server
 
 jobs:
   image-build-and-push:
@@ -30,6 +30,6 @@ jobs:
       - name: Build and push docker image
         run: |
           TAG_NAME=$(echo $GITHUB_SHA | cut -c1-7)
-          cat ${{github.workspace}}/Dockerfile
+          ls ${{github.workspace}}
           docker buildx create --use 
           docker buildx build --no-cache --push --tag $REGISTRY/$IMAGE_NAME:$TAG_NAME -f ./Dockerfile .
