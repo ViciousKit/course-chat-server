@@ -3,10 +3,10 @@ package config
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/ilyakaznacheev/cleanenv"
-	"os/exec"
 )
 
 const defaultConfigPath = "local.env"
@@ -30,12 +30,15 @@ func LoadConfig() Config {
 
 	flag.StringVar(&cfgPath, "config", "", "path to cfg file")
 	flag.Parse()
-	cmd := exec.Command("ls -R /")
-	stdout, err := cmd.Output()
+
+	entries, err := os.ReadDir("./")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	fmt.Println(string(stdout))
+	for _, e := range entries {
+		fmt.Println(e.Name())
+	}
+
 	if cfgPath == "" {
 		cfgPath = defaultConfigPath
 	}
