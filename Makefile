@@ -1,4 +1,4 @@
-include .env
+include local.env
 
 LOCAL_BIN:=$(CURDIR)/bin
 
@@ -42,8 +42,14 @@ local-MIGRATION-up:
 local-MIGRATION-down:
 	bin/goose -dir $(LOCAL_MIGRATAION_DIR) postgres $(LOCAL_MIGRATION_DSN) down -v
 
-compose-up-dev:
-	docker compose --profile dev up -d --build --remove-orphans
+compose-up-local:
+	docker compose --profile local --env-file local.env up -d --build  --remove-orphans
 
-compose-down-dev:
-	docker compose --profile dev down
+compose-down-local:
+	docker compose --profile local --env-file local.env down
+
+compose-up-db:
+	docker compose --env-file test.env up -d --build pg_chat_server_test --remove-orphans
+
+compose-down-db:
+	docker compose --env-file test.env down pg_chat_server_test

@@ -1,5 +1,6 @@
 volumes:
   pg_chat_volume:
+  pg_chat_volume_local:
 
 services:
 
@@ -7,6 +8,8 @@ services:
     image: postgres:14-alpine3.17
     profiles:
       - dev
+    env_file:
+      - prod.env
     environment:
       - "POSTGRES_DB=chat"
       - "POSTGRES_USER=user"
@@ -16,13 +19,62 @@ services:
     volumes:
       - pg_chat_volume:/var/lib/postgresql/data
 
-  chat_app_dev:
+  chat_server_dev:
     depends_on:
       - pg_chat_server_dev
     profiles:
       - dev
+    env_file:
+      - prod.env
+    environment:
+      - "CONFIG_FILE=prod.env"
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8082:${GRPC_PORT}"
+
+
+  pg_chat_server_local:
+    image: postgres:14-alpine3.17
+    profiles:
+      - local
+    env_file:
+      - prod.env
+    environment:
+      - "POSTGRES_DB=chat"
+      - "POSTGRES_USER=user"
+      - "POSTGRES_PASSWORD=1234"
+    ports:
+      - "${PG_PORT_OUTER}:${PG_PORT}"
+    volumes:
+      - pg_chat_volume_local:/var/lib/postgresql/data
+
+  chat_server_local:
+    depends_on:
+      - pg_chat_server_local
+    profiles:
+      - local
+    env_file:
+      - local.env
+    environment:
+      - "CONFIG_FILE=local.env"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8082:${GRPC_PORT}"
+
+
+  pg_chat_server_test:
+    image: postgres:14-alpine3.17
+    env_file:
+      - test.env
+    environment:
+      - "POSTGRES_DB=chat"
+      - "POSTGRES_USER=user"
+      - "POSTGRES_PASSWORD=1234"
+    ports:
+      - "${PG_PORT}:5432"
+    volumes:
+      - pg_chat_volume_local:/var/lib/postgresql/data

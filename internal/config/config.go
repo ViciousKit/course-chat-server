@@ -7,7 +7,7 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
-const defaultConfigPath = ".env"
+const defaultConfigPath = "local.env"
 
 type Config struct {
 	GRPC       GRPCConfig `env:"GRPC"`
@@ -30,7 +30,13 @@ func LoadConfig() Config {
 	flag.Parse()
 
 	if cfgPath == "" {
-		cfgPath = defaultConfigPath
+		configPath := os.Getenv("CONFIG_FILE")
+
+		if configPath != "" {
+			cfgPath = configPath
+		} else {
+			cfgPath = defaultConfigPath
+		}
 	}
 
 	if _, err := os.Stat(cfgPath); os.IsNotExist(err) {

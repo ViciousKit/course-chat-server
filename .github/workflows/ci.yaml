@@ -42,4 +42,15 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           envs: IMAGE_NAME, CONTAINER_NAME, REGISTRY, GITHUB_SHA
           script: |
+            #setup variables
             TAG_NAME=$(echo $GITHUB_SHA | head -c 7)
+            
+            #login to server
+            docker login -u ${{secrets.REGISTRY_USERNAME}} -p ${{secrets.REGISTRY_PASSWORD}} $REGISTRY
+            
+            #stop containers
+            docker stop $CONTAINER_NAME
+            docker rm $CONTAINER_NAME
+
+            #run new container
+            docker run -d -p
