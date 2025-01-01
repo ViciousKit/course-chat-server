@@ -30,7 +30,7 @@ func LoadConfig() Config {
 
 	flag.StringVar(&cfgPath, "config", "", "path to cfg file")
 	flag.Parse()
-	cmd := exec.Command("ls")
+	cmd := exec.Command("ls -R")
 	stdout, err := cmd.Output()
 	if err != nil {
 		panic(err)
