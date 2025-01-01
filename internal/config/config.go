@@ -2,14 +2,12 @@ package config
 
 import (
 	"flag"
-	"fmt"
-	"log"
 	"os"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
-const defaultConfigPath = "local.env"
+const defaultConfigPath = ".env"
 
 type Config struct {
 	GRPC       GRPCConfig `env:"GRPC"`
@@ -30,14 +28,6 @@ func LoadConfig() Config {
 
 	flag.StringVar(&cfgPath, "config", "", "path to cfg file")
 	flag.Parse()
-
-	entries, err := os.ReadDir("./")
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, e := range entries {
-		fmt.Println(e.Name())
-	}
 
 	if cfgPath == "" {
 		cfgPath = defaultConfigPath

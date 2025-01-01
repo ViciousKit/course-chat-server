@@ -1,9 +1,9 @@
-include local.env
+include .env
 
 LOCAL_BIN:=$(CURDIR)/bin
 
 LOCAL_MIGRATION_DIR:=$(MIGRATION_DIR)
-LOCAL_MIGRATION_DSN:="host=localhost user=$(PG_USER) password=$(PG_PASSWORD) dbname=$(PG_DATABASE_NAME) port=$(PG_PORT)"
+LOCAL_MIGRATION_DSN:="host=localhost user=$(PG_USER) password=$(PG_PASSWORD) dbname=$(PG_DATABASE_NAME) port=$(PG_PORT_OUTER)"
 
 install-deps:
 	GOBIN=$(LOCAL_BIN) go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.1
@@ -37,15 +37,13 @@ local-MIGRATION-status:
 	bin/goose -dir $(LOCAL_MIGRATION_DIR) postgres $(LOCAL_MIGRATION_DSN) status -v
 
 local-MIGRATION-up:
-	bin/goose -dir $(LOCAL_MIGRATAION_DIR) postgres $(LOCAL_MIGRATION_DSN) up -v
+	bin/goose -dir $(LOCAL_MIGRATION_DIR) postgres $(LOCAL_MIGRATION_DSN) up -v
 
 local-MIGRATION-down:
 	bin/goose -dir $(LOCAL_MIGRATAION_DIR) postgres $(LOCAL_MIGRATION_DSN) down -v
 
 compose-up-dev:
-	export ENV_FILE=local.env
-	docker compose --profile dev --env-file local.env up -d --build
+	docker compose --profile dev up -d --build --remove-orphans
 
 compose-down-dev:
-	export ENV_FILE=local.env
-	docker compose --profile dev --env-file local.env down
+	docker compose --profile dev down
