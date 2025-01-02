@@ -49,6 +49,7 @@ jobs:
           source: "./docker-compose.yml,./dev.env"
           target: "/deploy/chat-server/"
           overwrite: true
+          run: "ls -la"
 
       - name: Deploy to selectel
         uses: appleboy/ssh-action@v1.0.0
