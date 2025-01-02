@@ -1,5 +1,9 @@
 name: ci-dev
 
+permissions:
+  packages: write
+  contents: write
+
 on:
   push:
     branches: [ main ]
@@ -43,7 +47,8 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           source: "./docker-compose.yml,./dev.env"
-          target: "~/.deploy/${{ github.event.repository.name }}/"
+          target: "/deploy/chat-server/"
+          overwrite: true
 
       - name: Deploy to selectel
         uses: appleboy/ssh-action@v1.0.0
@@ -53,7 +58,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           envs: IMAGE_NAME, CONTAINER_NAME, REGISTRY, GITHUB_SHA
           script: |
-            cd "~/.deploy/${{ github.event.repository.name }}/"
+            cd "/deploy/chat-server/"
             ls
             
             #setup variables
@@ -75,5 +80,3 @@ jobs:
             
             #run a new container from a new image
             docker compose --profile dev --env-file dev.env up -d
-            rm docker-compose.yml
-            rm dev.env
