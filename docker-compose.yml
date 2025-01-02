@@ -6,6 +6,7 @@ services:
 
   pg_chat_server_dev:
     image: postgres:14-alpine3.17
+    container_name: pg_chat_server_dev
     profiles:
       - dev
     env_file:
