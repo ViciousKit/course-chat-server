@@ -12,6 +12,6 @@ WORKDIR /root
 
 COPY --from=builder /app/bin/chat_service .
 COPY --from=builder /app/local.env local.env
-COPY --from=builder /app/prod.env prod.env
+COPY --from=builder /app/dev.env dev.env
 
 CMD [ "./chat_service" ]

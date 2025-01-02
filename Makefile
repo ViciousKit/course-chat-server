@@ -43,7 +43,7 @@ local-MIGRATION-down:
 	bin/goose -dir $(LOCAL_MIGRATAION_DIR) postgres $(LOCAL_MIGRATION_DSN) down -v
 
 compose-up-local:
-	docker compose --profile local --env-file local.env up -d --build  --remove-orphans
+	docker compose --profile local --env-file local.env up -d --build --remove-orphans
 
 compose-down-local:
 	docker compose --profile local --env-file local.env down

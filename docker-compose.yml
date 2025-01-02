@@ -9,7 +9,7 @@ services:
     profiles:
       - dev
     env_file:
-      - prod.env
+      - dev.env
     environment:
       - "POSTGRES_DB=chat"
       - "POSTGRES_USER=user"
@@ -20,19 +20,19 @@ services:
       - pg_chat_volume:/var/lib/postgresql/data
 
   chat_server_dev:
+    container_name: ${CONTAINER_NAME}
+    image: ${IMAGE}
     depends_on:
       - pg_chat_server_dev
     profiles:
       - dev
     env_file:
-      - prod.env
+      - dev.env
     environment:
-      - "CONFIG_FILE=prod.env"
-    build:
-      context: .
-      dockerfile: Dockerfile
+      - "CONFIG_FILE=dev.env"
     ports:
       - "8082:${GRPC_PORT}"
+
 
 
   pg_chat_server_local:
@@ -40,7 +40,7 @@ services:
     profiles:
       - local
     env_file:
-      - prod.env
+      - local.env
     environment:
       - "POSTGRES_DB=chat"
       - "POSTGRES_USER=user"
@@ -64,6 +64,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8082:${GRPC_PORT}"
+
 
 
   pg_chat_server_test:
