@@ -71,9 +71,6 @@ jobs:
             #login to server
             docker login -u ${{secrets.REGISTRY_USERNAME}} -p ${{secrets.REGISTRY_PASSWORD}} $REGISTRY
             
-            #pull images from registry
-            docker pull $IMAGE
-            
             #stop containers
             docker stop $CONTAINER_NAME
             docker rm $CONTAINER_NAME

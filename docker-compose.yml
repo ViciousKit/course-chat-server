@@ -69,6 +69,8 @@ services:
 
   pg_chat_server_test:
     image: postgres:14-alpine3.17
+    profiles:
+      - test
     env_file:
       - test.env
     environment:
