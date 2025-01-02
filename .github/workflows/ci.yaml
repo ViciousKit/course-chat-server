@@ -61,7 +61,10 @@ jobs:
             #set variables for compose
             export IMAGE=$IMAGE
             
-            ls -R
+            ls
+            touch .env
+            echo dev.env >> .env
+            ls
             
             #run a new container from a new image
-            docker compose --profile dev --env-file ./dev.env up -d
+            docker compose --profile dev up -d
