@@ -46,10 +46,9 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          source: "./docker-compose.yml,./dev.env"
+          source: "${{github.workspace}}/docker-compose.yml,${{github.workspace}}/dev.env"
           target: "/deploy/chat-server/"
           overwrite: true
-          run: "ls -la"
 
       - name: Deploy to selectel
         uses: appleboy/ssh-action@v1.0.0
