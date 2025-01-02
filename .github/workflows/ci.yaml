@@ -61,9 +61,10 @@ jobs:
             #set variables for compose
             export IMAGE=$IMAGE
             
-            ls
             touch .env
-            echo dev.env >> .env
+            echo "PG_PORT_OUTER=5436" >> .env
+            echo "PG_PORT=5432" >> .env
+            echo "GRPC_PORT=50052" >> .env
             ls
             
             #run a new container from a new image

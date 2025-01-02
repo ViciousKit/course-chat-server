@@ -8,8 +8,6 @@ services:
     image: postgres:14-alpine3.17
     profiles:
       - dev
-    env_file:
-      - dev.env
     environment:
       - "POSTGRES_DB=chat"
       - "POSTGRES_USER=user"
@@ -26,8 +24,6 @@ services:
       - pg_chat_server_dev
     profiles:
       - dev
-    env_file:
-      - dev.env
     environment:
       - "CONFIG_FILE=dev.env"
     ports:
