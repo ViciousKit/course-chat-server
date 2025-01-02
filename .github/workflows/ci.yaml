@@ -1,7 +1,13 @@
 name: ci-dev
 
+permissions:
+  packages: write
+  contents: write
+
 on:
   push:
+    branches: [ main ]
+  pull_request:
     branches: [ main ]
 
 env:
@@ -34,6 +40,19 @@ jobs:
     needs: image-build-and-push
 
     steps:
+      - name: Checkout master
+        uses: actions/checkout@v3
+
+      - name: copy files to target server via scp
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "./docker-compose.yml,./dev.env"
+          target: "/deploy/chat-server/"
+          overwrite: true
+
       - name: Deploy to selectel
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -42,15 +61,15 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           envs: IMAGE_NAME, CONTAINER_NAME, REGISTRY, GITHUB_SHA
           script: |
+            cd "/deploy/chat-server/"
+            ls
+            
             #setup variables
             TAG_NAME=$(echo $GITHUB_SHA | head -c 7)
             IMAGE=$REGISTRY/$IMAGE_NAME:$TAG_NAME
             
             #login to server
             docker login -u ${{secrets.REGISTRY_USERNAME}} -p ${{secrets.REGISTRY_PASSWORD}} $REGISTRY
-            
-            #pull images from registry
-            docker pull $IMAGE
             
             #stop containers
             docker stop $CONTAINER_NAME
