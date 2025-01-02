@@ -67,7 +67,6 @@ services:
       - "8082:${GRPC_PORT}"
 
 
-
   pg_chat_server_test:
     image: postgres:14-alpine3.17
     profiles:
@@ -75,10 +74,10 @@ services:
     env_file:
       - test.env
     environment:
-      - "POSTGRES_DB=chat"
-      - "POSTGRES_USER=user"
-      - "POSTGRES_PASSWORD=1234"
+      - "POSTGRES_DB=${PG_DATABASE_NAME}"
+      - "POSTGRES_USER=${PG_USER}"
+      - "POSTGRES_PASSWORD=${PG_PASSWORD}"
     ports:
-      - "${PG_PORT}:5432"
+      - "${PG_PORT_OUTER}:5432"
     volumes:
       - pg_chat_volume_local:/var/lib/postgresql/data
