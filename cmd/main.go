@@ -33,7 +33,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("Started app at port :%d", cfg.GRPC.Port)
+	fmt.Printf("Started app at port :%d\n", cfg.GRPC.Port)
 
 	api := &srv{}
 	connection := initStorage(cfg.PGUsername, cfg.PGPassword, cfg.PGDatabase, cfg.PGHost, cfg.PGPort)

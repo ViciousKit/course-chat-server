@@ -2,8 +2,6 @@ package config
 
 import (
 	"flag"
-	"fmt"
-	"log"
 	"os"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -31,16 +29,14 @@ func LoadConfig() Config {
 	flag.StringVar(&cfgPath, "config", "", "path to cfg file")
 	flag.Parse()
 
-	entries, err := os.ReadDir("./")
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, e := range entries {
-		fmt.Println(e.Name())
-	}
-
 	if cfgPath == "" {
-		cfgPath = defaultConfigPath
+		configPath := os.Getenv("CONFIG_FILE")
+
+		if configPath != "" {
+			cfgPath = configPath
+		} else {
+			cfgPath = defaultConfigPath
+		}
 	}
 
 	if _, err := os.Stat(cfgPath); os.IsNotExist(err) {
