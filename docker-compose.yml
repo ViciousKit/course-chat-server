@@ -35,7 +35,6 @@ services:
       - "8082:${GRPC_PORT}"
 
 
-
   pg_chat_server_local:
     image: postgres:14-alpine3.17
     profiles:
