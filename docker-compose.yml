@@ -35,8 +35,8 @@ services:
       - "8082:${GRPC_PORT}"
 
   migrations_dev:
-    container_name: ${MIGRATION_CONTAINER}
-    image: {$MIGRATION_IMAGE}
+    container_name: ${MIGRATION_IMAGE_NAME}
+    image: {MIGRATION_CONTAINER_NAME}
     profiles:
       - dev
     restart: on-failure
