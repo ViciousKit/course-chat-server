@@ -36,7 +36,7 @@ services:
 
   migrations_dev:
     container_name: ${MIGRATION_CONTAINER_NAME}
-    image: {MIGRATION_IMAGE_NAME}
+    image: ${MIGRATION_IMAGE_NAME}
     profiles:
       - dev
     restart: on-failure
