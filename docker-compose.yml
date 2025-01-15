@@ -34,6 +34,19 @@ services:
     ports:
       - "8082:${GRPC_PORT}"
 
+  migrations_dev:
+    container_name: ${MIGRATION_CONTAINER}
+    image: {$MIGRATION_IMAGE}
+    profiles:
+      - dev
+    restart: on-failure
+    environment:
+      DB_HOST: pg_chat_server_dev
+    env_file:
+      - dev.env
+    depends_on:
+      - pg_chat_server_dev
+
 
   pg_chat_server_local:
     image: postgres:14-alpine3.17
@@ -80,3 +93,4 @@ services:
       - "${PG_PORT_OUTER}:5432"
     volumes:
       - pg_chat_volume_local:/var/lib/postgresql/data
+
