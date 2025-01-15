@@ -12,3 +12,8 @@ WORKDIR /root
 
 ADD migrations/*.sql migrations/
 ADD migration.sh .
+ADD dev.env .
+
+RUN chmod +x migration.sh
+
+ENTRYPOINT ["bash", "migration.sh"]
