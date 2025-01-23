@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	chatApi "github.com/ViciousKit/course-chat-server/internal/client/api"
+	chatApi "github.com/ViciousKit/course-chat-server/internal/api"
 	chatRepository "github.com/ViciousKit/course-chat-server/internal/repository/chat"
 	chatService "github.com/ViciousKit/course-chat-server/internal/service/chat"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -31,6 +31,7 @@ func main() {
 	api := chatApi.NewApi(chatServ)
 	grpcServer := grpc.NewServer()
 	reflection.Register(grpcServer)
+
 	generated.RegisterChatServerV1Server(grpcServer, api)
 
 	if err := grpcServer.Serve(listener); err != nil {
@@ -46,7 +47,6 @@ func initStorage(user string, password string, dbname string, host string, port 
 	if err != nil {
 		log.Fatalf("failed to connect to database: %v", err)
 	}
-	defer pool.Close()
 
 	if err := pool.Ping(context.Background()); err != nil {
 		fmt.Println("Cant ping pg" + err.Error())

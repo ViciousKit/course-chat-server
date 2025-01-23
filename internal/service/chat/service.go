@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/ViciousKit/course-chat-server/internal/repository"
 	"github.com/ViciousKit/course-chat-server/internal/service"
-	"github.com/golang/protobuf/ptypes/timestamp"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type Service struct {
@@ -21,7 +21,7 @@ func (s *Service) CreateChat(ctx context.Context, userIds []int64) (int64, error
 func (s *Service) DeleteChat(ctx context.Context, chatId int64) error {
 	return s.repository.DeleteChat(ctx, chatId)
 }
-func (s *Service) SendMessage(ctx context.Context, from int64, text string, chatId int64, timestamp *timestamp.Timestamp) error {
+func (s *Service) SendMessage(ctx context.Context, from int64, text string, chatId int64, timestamp *timestamppb.Timestamp) error {
 	return s.repository.SendMessage(ctx, from, text, chatId, timestamp)
 }
 func (s *Service) AddUsers(ctx context.Context, userIds []int64, chatId int64) error {

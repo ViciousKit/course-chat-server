@@ -3,8 +3,8 @@ package chat
 import (
 	"context"
 	"github.com/ViciousKit/course-chat-server/internal/repository"
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type repo struct {
@@ -16,7 +16,7 @@ func NewRepository(db *pgxpool.Pool) repository.ChatRepository {
 }
 
 func (r repo) CreateChat(ctx context.Context, userIds []int64) (int64, error) {
-	rows := r.db.QueryRow(ctx, "INSERT INTO chats (user_ids) VALUES ($1) RETURNING id", userIds)
+	rows := r.db.QueryRow(ctx, "INSERT INTO chats (users) VALUES ($1) RETURNING id", userIds)
 
 	var lastId int64
 	err := rows.Scan(&lastId)
@@ -37,8 +37,8 @@ func (r repo) DeleteChat(ctx context.Context, chatId int64) error {
 	return nil
 }
 
-func (r repo) SendMessage(ctx context.Context, from int64, text string, chatId int64, timestamp *timestamp.Timestamp) error {
-	_, err := r.db.Exec(ctx, "INSERT INTO messages (from, text, chat_id, created_at) VALUES ($1, $2, $3, $4)", from, text, chatId, timestamp)
+func (r repo) SendMessage(ctx context.Context, from int64, text string, chatId int64, timestamp *timestamppb.Timestamp) error {
+	_, err := r.db.Exec(ctx, "INSERT INTO messages (author_id, text, chat_id, created_at) VALUES ($1, $2, $3, $4)", from, text, chatId, timestamp)
 
 	if err != nil {
 		return err
