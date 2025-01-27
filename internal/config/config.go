@@ -1,52 +1,67 @@
 package config
 
 import (
-	"flag"
-	"os"
-
+	"errors"
+	"fmt"
 	"github.com/ilyakaznacheev/cleanenv"
+	"os"
 )
 
-const defaultConfigPath = "local.env"
-
-type Config struct {
+type PGConfig struct {
 	GRPC       GRPCConfig `env:"GRPC"`
 	PGUsername string     `env:"PG_USER"`
 	PGPassword string     `env:"PG_PASSWORD"`
 	PGDatabase string     `env:"PG_DATABASE_NAME"`
 	PGHost     string     `env:"PG_HOST"`
-	PGPort     int        `env:"PG_PORT"`
+	PGPort     string     `env:"PG_PORT"`
 }
 
 type GRPCConfig struct {
-	Port int    `env:"GRPC_PORT" envDefault:"50051"`
+	Port string `env:"GRPC_PORT" envDefault:"50051"`
 	Host string `env:"GRPC_HOST" envDefault:"localhost"`
 }
 
-func LoadConfig() Config {
-	var cfgPath string
+type Path struct {
+	path string
+}
 
-	flag.StringVar(&cfgPath, "config", "", "path to cfg file")
-	flag.Parse()
+var configPath = New()
 
-	if cfgPath == "" {
-		configPath := os.Getenv("CONFIG_FILE")
+func New() *Path {
+	p := &Path{}
+	_ = p.Load()
 
-		if configPath != "" {
-			cfgPath = configPath
-		} else {
-			cfgPath = defaultConfigPath
-		}
+	return p
+}
+
+func LoadPGConfig() (PGConfig, error) {
+	if _, err := os.Stat(configPath.path); os.IsNotExist(err) {
+		return PGConfig{}, errors.New(fmt.Sprintf("config file does not exist: " + configPath.path))
 	}
 
-	if _, err := os.Stat(cfgPath); os.IsNotExist(err) {
-		panic("config file does not exist: " + cfgPath)
+	var cfg PGConfig
+	if err := cleanenv.ReadConfig(configPath.path, &cfg); err != nil {
+		return PGConfig{}, errors.New(fmt.Sprintf("failed to read pg config: " + err.Error()))
 	}
 
-	var cfg Config
-	if err := cleanenv.ReadConfig(cfgPath, &cfg); err != nil {
-		panic("failed to read config: " + err.Error())
+	return cfg, nil
+}
+
+func LoadGRPCConfig() (GRPCConfig, error) {
+	if _, err := os.Stat(configPath.path); os.IsNotExist(err) {
+		return GRPCConfig{}, errors.New(fmt.Sprintf("config file does not exist: %s\n", configPath.path))
 	}
 
-	return cfg
+	var cfg GRPCConfig
+	if err := cleanenv.ReadConfig(configPath.path, &cfg); err != nil {
+		return GRPCConfig{}, errors.New(fmt.Sprintf("failed to read grpc config: " + err.Error()))
+	}
+
+	return cfg, nil
+}
+
+func (cfg PGConfig) PGDSN() string {
+	return fmt.Sprintf("host=%s port=%s user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		cfg.PGHost, cfg.PGPort, cfg.PGUsername, cfg.PGPassword, cfg.PGDatabase)
 }
